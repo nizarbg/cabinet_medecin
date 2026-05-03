@@ -38,22 +38,22 @@
             </div>
             <ul class="nav flex-column gap-1">
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/dashboard}" th:classappend="${#httpServletRequest.requestURI == '/dashboard' ? 'active' : ''}">
+                    <a class="nav-link" th:href="@{/dashboard}" th:classappend="${currentUri == '/dashboard' ? 'active' : ''}">
                         <i class="bi bi-speedometer2 me-2"></i>Tableau de bord
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/patients}" th:classappend="${#strings.startsWith(#httpServletRequest.requestURI, '/patients') ? 'active' : ''}">
+                    <a class="nav-link" th:href="@{/patients}" th:classappend="${#strings.startsWith(currentUri, '/patients') ? 'active' : ''}">
                         <i class="bi bi-people me-2"></i>Patients
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/medecins}" th:classappend="${#strings.startsWith(#httpServletRequest.requestURI, '/medecins') ? 'active' : ''}">
+                    <a class="nav-link" th:href="@{/medecins}" th:classappend="${#strings.startsWith(currentUri, '/medecins') ? 'active' : ''}">
                         <i class="bi bi-person-badge me-2"></i>Médecins
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/rendez-vous}" th:classappend="${#strings.startsWith(#httpServletRequest.requestURI, '/rendez-vous') ? 'active' : ''}">
+                    <a class="nav-link" th:href="@{/rendez-vous}" th:classappend="${#strings.startsWith(currentUri, '/rendez-vous') ? 'active' : ''}">
                         <i class="bi bi-calendar-check me-2"></i>Rendez-vous
                     </a>
                 </li>

@@ -3,6 +3,8 @@ package com.fst.cabinet.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 
 @Entity
@@ -31,6 +33,7 @@ public class RendezVous {
     private int dureeMinutes;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(nullable = false, columnDefinition = "varchar(20)")
     private StatutRdv statut = StatutRdv.PLANIFIE;
 
