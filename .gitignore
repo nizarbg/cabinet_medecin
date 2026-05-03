@@ -1,5 +1,14 @@
-/.vscode/
+### Maven ###
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### IDE ###
 /.idea/
-/target/
-/target/classes/
-/target/test-classes/
+/.vscode/
+*.iml
+*.iws
+*.ipr
+
+### OS ###
+.DS_Store
+Thumbs.db
