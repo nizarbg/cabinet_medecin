@@ -1,3 +1,5 @@
 /.vscode/
 /.idea/
 /target/
+/target/classes/
+/target/test-classes/
