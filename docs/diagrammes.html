@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Diagrammes UML — Cabinet Médical</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            color: #2d3748;
+        }
+        header {
+            background: linear-gradient(135deg, #1a3c5e 0%, #2e6da4 100%);
+            color: white;
+            padding: 2rem 2.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        header h1 { font-size: 1.8rem; font-weight: 700; }
+        header p  { opacity: .8; margin-top: .3rem; font-size: .95rem; }
+
+        nav.toc {
+            display: flex; gap: 1rem; padding: 1rem 2.5rem;
+            background: #fff; border-bottom: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+        }
+        nav.toc a {
+            text-decoration: none; color: #2e6da4; font-weight: 600;
+            padding: .4rem .9rem; border-radius: 20px;
+            border: 2px solid #2e6da4; font-size: .85rem;
+            transition: all .2s;
+        }
+        nav.toc a:hover { background: #2e6da4; color: #fff; }
+
+        main { max-width: 1400px; margin: 0 auto; padding: 2rem 2.5rem; }
+
+        section.diagram-section {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.08);
+            margin-bottom: 3rem;
+            overflow: hidden;
+        }
+        .section-header {
+            background: #1a3c5e;
+            color: white;
+            padding: 1.2rem 1.8rem;
+            display: flex; align-items: center; gap: .8rem;
+        }
+        .section-header .num {
+            background: #e67e22; color: white;
+            border-radius: 50%; width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: .9rem; flex-shrink: 0;
+        }
+        .section-header h2 { font-size: 1.2rem; font-weight: 600; }
+        .section-header p  { font-size: .85rem; opacity: .75; margin-top: .2rem; }
+
+        .diagram-body {
+            padding: 2rem;
+            display: flex; justify-content: center; align-items: flex-start;
+            overflow-x: auto;
+        }
+        .mermaid { min-width: 300px; }
+
+        footer {
+            text-align: center; padding: 1.5rem;
+            color: #718096; font-size: .85rem;
+            border-top: 1px solid #e2e8f0; background: #fff;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>&#128203; Diagrammes UML — Gestion d'un Cabinet Médical</h1>
+    <p>FST — Master STR 2025/2026 &nbsp;|&nbsp; Spring Boot 3 · Thymeleaf · MySQL</p>
+</header>
+
+<nav class="toc">
+    <a href="#usecase">1. Diagramme de Cas d'Utilisation</a>
+    <a href="#sequence">2. Diagramme de Séquence</a>
+    <a href="#class">3. Diagramme de Classes</a>
+</nav>
+
+<main>
+
+    <!-- ====================================================
+         1. USE CASE DIAGRAM
+         ==================================================== -->
+    <section class="diagram-section" id="usecase">
+        <div class="section-header">
+            <div class="num">1</div>
+            <div>
+                <h2>Diagramme de Cas d'Utilisation</h2>
+                <p>Acteurs : Admin, Médecin, Secrétaire — interactions avec le système</p>
+            </div>
+        </div>
+        <div class="diagram-body">
+            <div class="mermaid">
+flowchart LR
+    Admin(["Admin"]):::actor
+    Medecin(["Medecin"]):::actor
+    Secretaire(["Secretaire"]):::actor
+
+    subgraph SYS ["Systeme - Cabinet Medical"]
+        direction TB
+
+        subgraph AUTH ["Authentification"]
+            UC0("Se connecter")
+            UC00("Se deconnecter")
+        end
+
+        subgraph DASH ["Tableau de bord"]
+            UC1("Voir RDV du jour")
+            UC2("Voir RDV de la semaine")
+            UC3("Voir patients en attente")
+        end
+
+        subgraph PAT ["Gestion Patients"]
+            UC4("Creer un patient")
+            UC5("Modifier un patient")
+            UC6("Supprimer un patient")
+            UC7("Rechercher un patient")
+            UC8("Voir fiche patient")
+        end
+
+        subgraph MED ["Gestion Medecins - Admin"]
+            UC9("Creer un medecin")
+            UC10("Modifier un medecin")
+            UC11("Supprimer un medecin")
+        end
+
+        subgraph RDV ["Gestion Rendez-vous"]
+            UC12("Creer un RDV")
+            UC13("Modifier un RDV")
+            UC14("Annuler un RDV")
+            UC15("Changer statut RDV")
+            UC16(["include - Verifier chevauchement"]):::incl
+        end
+
+        subgraph ORD ["Gestion Ordonnances"]
+            UC17("Creer une ordonnance")
+            UC18("Modifier une ordonnance")
+            UC19("Telecharger PDF")
+        end
+    end
+
+    Admin --- AUTH
+    Admin --- DASH
+    Admin --- PAT
+    Admin --- MED
+    Admin --- RDV
+    Admin --- ORD
+
+    Medecin --- AUTH
+    Medecin --- DASH
+    Medecin --- PAT
+    Medecin --- RDV
+    Medecin --- ORD
+
+    Secretaire --- AUTH
+    Secretaire --- DASH
+    Secretaire --- PAT
+    Secretaire --- RDV
+
+    UC12 -.-> UC16
+    UC13 -.-> UC16
+
+    classDef actor fill:#1a3c5e,stroke:#1a3c5e,color:#fff
+    classDef incl  fill:#fef9e7,stroke:#e67e22,color:#7d6608
+    class Admin,Medecin,Secretaire actor
+    class UC16 incl
+            </div>
+        </div>
+    </section>
+
+    <!-- ====================================================
+         2. SEQUENCE DIAGRAM — Créer un RDV
+         ==================================================== -->
+    <section class="diagram-section" id="sequence">
+        <div class="section-header">
+            <div class="num">2</div>
+            <div>
+                <h2>Diagramme de Séquence — Création d'un Rendez-vous</h2>
+                <p>Scénario principal : l'utilisateur soumet le formulaire, le service vérifie le chevauchement</p>
+            </div>
+        </div>
+        <div class="diagram-body">
+            <div class="mermaid">
+sequenceDiagram
+    actor User as SecretaireOuAdmin
+    participant C  as RendezVousController
+    participant RS as RendezVousService
+    participant PS as PatientService
+    participant MS as MedecinService
+    participant RR as RendezVousRepository
+    participant PR as PatientRepository
+    participant MR as MedecinRepository
+    participant DB as MySQL
+
+    User->>C: POST /rendez-vous/nouveau
+    activate C
+
+    C->>C: Validation Bean - champs requis
+
+    alt Erreurs de validation
+        C-->>User: Vue formulaire avec erreurs
+    else Donnees valides
+        C->>RS: save(rendezVousDto)
+        activate RS
+
+        Note over RS: Calcul fin = debut + duree
+        RS->>RR: findChevauchements(medecinId, debut, fin, null)
+        activate RR
+        RR->>DB: SELECT rdv WHERE statut actif ET periode en conflit
+        DB-->>RR: Liste des RDV en conflit
+        RR-->>RS: List RendezVous
+        deactivate RR
+
+        alt Chevauchement detecte
+            RS-->>C: IllegalStateException - chevauchement detecte
+            C-->>User: Vue formulaire avec message erreur
+        else Aucun chevauchement
+            RS->>PS: findById(patientId)
+            activate PS
+            PS->>PR: findById(patientId)
+            PR->>DB: SELECT patient WHERE id
+            DB-->>PR: Patient
+            PR-->>PS: Optional Patient
+            PS-->>RS: Patient
+            deactivate PS
+
+            RS->>MS: findById(medecinId)
+            activate MS
+            MS->>MR: findById(medecinId)
+            MR->>DB: SELECT medecin WHERE id
+            DB-->>MR: Medecin
+            MR-->>MS: Optional Medecin
+            MS-->>RS: Medecin
+            deactivate MS
+
+            RS->>RR: save(rendezVous)
+            activate RR
+            RR->>DB: INSERT INTO rendez_vous
+            DB-->>RR: RendezVous avec id genere
+            RR-->>RS: RendezVous sauvegarde
+            deactivate RR
+
+            RS-->>C: RendezVous
+            deactivate RS
+            C-->>User: redirect vers liste RDV
+        end
+    end
+    deactivate C
+            </div>
+        </div>
+    </section>
+
+    <!-- ====================================================
+         3. CLASS DIAGRAM
+         ==================================================== -->
+    <section class="diagram-section" id="class">
+        <div class="section-header">
+            <div class="num">3</div>
+            <div>
+                <h2>Diagramme de Classes</h2>
+                <p>Entités JPA, services, repositories et couche controleur</p>
+            </div>
+        </div>
+        <div class="diagram-body">
+            <div class="mermaid">
+classDiagram
+
+    class StatutRdv {
+        PLANIFIE
+        CONFIRME
+        ANNULE
+        TERMINE
+    }
+    <<enumeration>> StatutRdv
+
+    class Patient {
+        -id
+        -cin
+        -nom
+        -prenom
+        -telephone
+        -email
+        -antecedents
+    }
+
+    class Medecin {
+        -id
+        -nom
+        -prenom
+        -specialite
+        -numeroOrdre
+        -telephone
+        -actif
+    }
+
+    class RendezVous {
+        -id
+        -dureeMinutes
+        -motif
+    }
+
+    class Ordonnance {
+        -id
+        -observations
+    }
+
+    class LigneMedicament {
+        -id
+        -nomMedicament
+        -posologie
+        -duree
+    }
+
+    class Utilisateur {
+        -id
+        -username
+        -nomComplet
+        -actif
+    }
+
+    class PatientRepository {
+        +findByCin()
+        +existsByCin()
+        +rechercher()
+    }
+    <<interface>> PatientRepository
+
+    class MedecinRepository {
+        +findByActifTrue()
+        +existsByNumeroOrdre()
+    }
+    <<interface>> MedecinRepository
+
+    class RendezVousRepository {
+        +findByJour()
+        +findBySemaine()
+        +findChevauchements()
+    }
+    <<interface>> RendezVousRepository
+
+    class OrdonnanceRepository {
+        +findByRendezVousId()
+        +existsByRendezVousId()
+    }
+    <<interface>> OrdonnanceRepository
+
+    class PatientService {
+        +findAll()
+        +findById()
+        +save()
+        +update()
+        +delete()
+    }
+
+    class MedecinService {
+        +findAll()
+        +findActifs()
+        +findById()
+        +save()
+        +delete()
+    }
+
+    class RendezVousService {
+        +findAll()
+        +findById()
+        +findDuJour()
+        +findEnAttente()
+        +save()
+        +annuler()
+        +changerStatut()
+    }
+
+    class OrdonnanceService {
+        +findById()
+        +findByRendezVousId()
+        +save()
+        +update()
+        +delete()
+    }
+
+    class PdfService {
+        +generateOrdonnancePdf()
+    }
+
+    class UserDetailsServiceImpl {
+        +loadUserByUsername()
+    }
+
+    class DashboardController {
+        +dashboard()
+    }
+
+    class PatientController {
+        +list()
+        +createForm()
+        +create()
+        +fiche()
+        +delete()
+    }
+
+    class RendezVousController {
+        +list()
+        +createForm()
+        +create()
+        +detail()
+        +annuler()
+    }
+
+    class OrdonnanceController {
+        +createForm()
+        +create()
+        +detail()
+        +downloadPdf()
+    }
+
+    Patient --> RendezVous
+    Medecin --> RendezVous
+    RendezVous --> Ordonnance
+    Ordonnance --> LigneMedicament
+    RendezVous --> StatutRdv
+
+    PatientRepository --> Patient
+    MedecinRepository --> Medecin
+    RendezVousRepository --> RendezVous
+    OrdonnanceRepository --> Ordonnance
+
+    PatientService --> PatientRepository
+    MedecinService --> MedecinRepository
+    RendezVousService --> RendezVousRepository
+    RendezVousService --> PatientService
+    RendezVousService --> MedecinService
+    OrdonnanceService --> OrdonnanceRepository
+    OrdonnanceService --> RendezVousRepository
+
+    DashboardController --> RendezVousService
+    PatientController --> PatientService
+    PatientController --> RendezVousService
+    RendezVousController --> RendezVousService
+    RendezVousController --> PatientService
+    RendezVousController --> MedecinService
+    OrdonnanceController --> OrdonnanceService
+    OrdonnanceController --> RendezVousService
+    OrdonnanceController --> PdfService
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    Cabinet Médical — FST · Master STR 2025/2026 · Encadrant : Nader Belhadj
+</footer>
+
+<script>
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'base',
+        themeVariables: {
+            primaryColor:       '#eaf4fb',
+            primaryTextColor:   '#1a3c5e',
+            primaryBorderColor: '#2e6da4',
+            lineColor:          '#2e6da4',
+            secondaryColor:     '#fef9e7',
+            tertiaryColor:      '#f0f4f8',
+            fontFamily:         'Segoe UI, Tahoma, Verdana, sans-serif',
+            fontSize:           '14px'
+        },
+        flowchart:    { curve: 'basis',   useMaxWidth: false },
+        sequence:     { useMaxWidth: false, diagramMarginX: 30 },
+        classDiagram: { useMaxWidth: false }
+    });
+</script>
+</body>
+</html>

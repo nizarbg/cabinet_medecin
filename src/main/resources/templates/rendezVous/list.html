@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title>Rendez-vous</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="bi bi-calendar-check me-2 text-primary"></i>Rendez-vous</h2>
+        <a th:href="@{/rendez-vous/nouveau}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>Nouveau RDV
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div th:if="${rdvList.empty}" class="p-5 text-center text-muted">
+                <i class="bi bi-calendar-x fs-1"></i>
+                <p class="mt-2">Aucun rendez-vous enregistré.</p>
+            </div>
+            <div th:unless="${rdvList.empty}" class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Date/Heure</th><th>Patient</th><th>Médecin</th>
+                        <th>Durée</th><th>Motif</th><th>Statut</th><th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="rdv : ${rdvList}">
+                        <td class="fw-semibold" th:text="${#temporals.format(rdv.dateHeure, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td>
+                            <a th:href="@{/patients/{id}(id=${rdv.patient.id})}"
+                               th:text="${rdv.patient.prenom + ' ' + rdv.patient.nom}"></a>
+                        </td>
+                        <td th:text="${'Dr. ' + rdv.medecin.prenom + ' ' + rdv.medecin.nom}"></td>
+                        <td th:text="${rdv.dureeMinutes + ' min'}"></td>
+                        <td th:text="${rdv.motif ?: '—'}"></td>
+                        <td>
+                            <span th:class="${'badge badge-' + #strings.toLowerCase(rdv.statut.name())}"
+                                  th:text="${rdv.statut}"></span>
+                        </td>
+                        <td>
+                            <a th:href="@{/rendez-vous/{id}(id=${rdv.id})}"
+                               class="btn btn-sm btn-outline-primary me-1" title="Voir">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a th:if="${rdv.statut.name() != 'ANNULE' and rdv.statut.name() != 'TERMINE'}"
+                               th:href="@{/rendez-vous/{id}/modifier(id=${rdv.id})}"
+                               class="btn btn-sm btn-outline-warning me-1" title="Modifier">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form th:if="${rdv.statut.name() != 'ANNULE'}"
+                                  th:action="@{/rendez-vous/{id}/annuler(id=${rdv.id})}" method="post"
+                                  class="d-inline" onsubmit="return confirm('Annuler ce rendez-vous ?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Annuler">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

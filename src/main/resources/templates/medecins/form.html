@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title>Formulaire Médecin</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="d-flex align-items-center gap-2 mb-4">
+        <a th:href="@{/medecins}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i></a>
+        <h2 class="fw-bold mb-0">
+            <span th:if="${medecinDto.id == null}">Nouveau médecin</span>
+            <span th:unless="${medecinDto.id == null}">Modifier le médecin</span>
+        </h2>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="max-width: 700px;">
+        <div class="card-body p-4">
+            <form th:action="${medecinDto.id == null ? '/medecins/nouveau' : '/medecins/' + medecinDto.id + '/modifier'}"
+                  th:object="${medecinDto}" method="post" novalidate>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Nom <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{nom}" class="form-control"
+                               th:classappend="${#fields.hasErrors('nom')} ? 'is-invalid'"/>
+                        <div class="invalid-feedback" th:errors="*{nom}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Prénom <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{prenom}" class="form-control"
+                               th:classappend="${#fields.hasErrors('prenom')} ? 'is-invalid'"/>
+                        <div class="invalid-feedback" th:errors="*{prenom}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Spécialité <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{specialite}" class="form-control"
+                               th:classappend="${#fields.hasErrors('specialite')} ? 'is-invalid'"/>
+                        <div class="invalid-feedback" th:errors="*{specialite}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Numéro d'ordre <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{numeroOrdre}" class="form-control" placeholder="MED-001"
+                               th:classappend="${#fields.hasErrors('numeroOrdre')} ? 'is-invalid'"/>
+                        <div class="invalid-feedback" th:errors="*{numeroOrdre}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Téléphone</label>
+                        <input type="text" th:field="*{telephone}" class="form-control" placeholder="12345678"
+                               th:classappend="${#fields.hasErrors('telephone')} ? 'is-invalid'"/>
+                        <div class="invalid-feedback" th:errors="*{telephone}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Email</label>
+                        <input type="email" th:field="*{email}" class="form-control"
+                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"/>
+                        <div class="invalid-feedback" th:errors="*{email}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Horaires de disponibilité</label>
+                        <input type="text" th:field="*{horairesDisponibilite}" class="form-control"
+                               placeholder="ex: Lun-Ven 08:00-16:00"/>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input type="checkbox" th:field="*{actif}" class="form-check-input" id="actif"/>
+                            <label class="form-check-label" for="actif">Médecin actif</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i>Enregistrer
+                    </button>
+                    <a th:href="@{/medecins}" class="btn btn-outline-secondary">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

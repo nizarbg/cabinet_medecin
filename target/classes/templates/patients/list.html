@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/main}">
+<head><title>Patients</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="bi bi-people me-2 text-primary"></i>Gestion des Patients</h2>
+        <a th:href="@{/patients/nouveau}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>Nouveau patient
+        </a>
+    </div>
+
+    <!-- Recherche -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form th:action="@{/patients}" method="get" class="d-flex gap-2">
+                <input type="text" name="q" class="form-control" placeholder="Rechercher par nom, CIN, téléphone..."
+                       th:value="${q}"/>
+                <button type="submit" class="btn btn-outline-primary"><i class="bi bi-search me-1"></i>Rechercher</button>
+                <a th:href="@{/patients}" class="btn btn-outline-secondary">Réinitialiser</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div th:if="${patients.empty}" class="p-5 text-center text-muted">
+                <i class="bi bi-person-x fs-1"></i>
+                <p class="mt-2">Aucun patient trouvé.</p>
+            </div>
+            <div th:unless="${patients.empty}" class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>CIN</th><th>Nom complet</th><th>Date naissance</th>
+                        <th>Téléphone</th><th>Email</th><th>Inscrit le</th><th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="p : ${patients}">
+                        <td><span class="badge bg-secondary" th:text="${p.cin}"></span></td>
+                        <td>
+                            <a class="fw-semibold text-decoration-none"
+                               th:href="@{/patients/{id}(id=${p.id})}"
+                               th:text="${p.prenom + ' ' + p.nom}"></a>
+                        </td>
+                        <td th:text="${#temporals.format(p.dateNaissance, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${p.telephone ?: '—'}"></td>
+                        <td th:text="${p.email ?: '—'}"></td>
+                        <td th:text="${#temporals.format(p.dateCreation, 'dd/MM/yyyy')}"></td>
+                        <td>
+                            <a th:href="@{/patients/{id}(id=${p.id})}" class="btn btn-sm btn-outline-primary me-1"
+                               title="Fiche patient"><i class="bi bi-eye"></i></a>
+                            <a th:href="@{/patients/{id}/modifier(id=${p.id})}" class="btn btn-sm btn-outline-warning me-1"
+                               title="Modifier"><i class="bi bi-pencil"></i></a>
+                            <form th:action="@{/patients/{id}/supprimer(id=${p.id})}" method="post" class="d-inline"
+                                  onsubmit="return confirm('Supprimer ce patient ?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

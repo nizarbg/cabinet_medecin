@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title>Formulaire Ordonnance</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="d-flex align-items-center gap-2 mb-4">
+        <a th:href="@{/rendez-vous/{id}(id=${rdv.id})}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <h2 class="fw-bold mb-0">
+            <span th:if="${ordonnanceDto.id == null}">Nouvelle ordonnance</span>
+            <span th:unless="${ordonnanceDto.id == null}">Modifier l'ordonnance</span>
+        </h2>
+    </div>
+
+    <!-- Infos RDV -->
+    <div class="alert alert-info d-flex gap-3 align-items-center mb-4">
+        <i class="bi bi-info-circle fs-4"></i>
+        <div>
+            <strong>Patient :</strong>
+            <span th:text="${rdv.patient.prenom + ' ' + rdv.patient.nom}"></span> —
+            <strong>Médecin :</strong>
+            <span th:text="${'Dr. ' + rdv.medecin.prenom + ' ' + rdv.medecin.nom}"></span> —
+            <strong>Date :</strong>
+            <span th:text="${#temporals.format(rdv.dateHeure, 'dd/MM/yyyy HH:mm')}"></span>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <form th:action="${ordonnanceDto.id == null ? '/ordonnances/nouveau' : '/ordonnances/' + ordonnanceDto.id + '/modifier'}"
+                  th:object="${ordonnanceDto}" method="post" id="ordonnanceForm">
+
+                <input type="hidden" th:field="*{rendezVousId}"/>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Observations / Diagnostic</label>
+                    <textarea th:field="*{observations}" class="form-control" rows="3"
+                              placeholder="Observations cliniques, diagnostic..."></textarea>
+                </div>
+
+                <h5 class="fw-semibold mb-3"><i class="bi bi-capsule me-2 text-success"></i>Médicaments prescrits</h5>
+
+                <div id="medicamentsContainer">
+                    <div th:each="ligne, iter : *{medicaments}" class="card border mb-2 p-3 medicament-row">
+                        <input type="hidden" th:field="*{medicaments[__${iter.index}__].id}"/>
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold">Médicament <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{medicaments[__${iter.index}__].nomMedicament}"
+                                       class="form-control form-control-sm" placeholder="Nom du médicament"
+                                       th:classappend="${#fields.hasErrors('medicaments[__${iter.index}__].nomMedicament')} ? 'is-invalid'"/>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold">Posologie</label>
+                                <input type="text" th:field="*{medicaments[__${iter.index}__].posologie}"
+                                       class="form-control form-control-sm" placeholder="ex: 1 cp matin et soir"/>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-semibold">Durée</label>
+                                <input type="text" th:field="*{medicaments[__${iter.index}__].duree}"
+                                       class="form-control form-control-sm" placeholder="ex: 7 jours"/>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-sm btn-outline-danger w-100 remove-ligne"
+                                        th:if="${iter.index > 0}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" id="addMedicament" class="btn btn-outline-success btn-sm mt-2">
+                    <i class="bi bi-plus me-1"></i>Ajouter un médicament
+                </button>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i>Enregistrer l'ordonnance
+                    </button>
+                    <a th:href="@{/rendez-vous/{id}(id=${rdv.id})}" class="btn btn-outline-secondary">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<th:block layout:fragment="scripts">
+<script th:inline="javascript">
+    let index = /*[[${#lists.size(ordonnanceDto.medicaments)}]]*/ 1;
+
+    document.getElementById('addMedicament').addEventListener('click', function () {
+        const container = document.getElementById('medicamentsContainer');
+        const html = `
+            <div class="card border mb-2 p-3 medicament-row">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold">Médicament <span class="text-danger">*</span></label>
+                        <input type="text" name="medicaments[${index}].nomMedicament"
+                               class="form-control form-control-sm" placeholder="Nom du médicament" required/>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold">Posologie</label>
+                        <input type="text" name="medicaments[${index}].posologie"
+                               class="form-control form-control-sm" placeholder="ex: 1 cp matin et soir"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold">Durée</label>
+                        <input type="text" name="medicaments[${index}].duree"
+                               class="form-control form-control-sm" placeholder="ex: 7 jours"/>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-sm btn-outline-danger w-100 remove-ligne">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        container.insertAdjacentHTML('beforeend', html);
+        index++;
+        attachRemoveListeners();
+    });
+
+    function attachRemoveListeners() {
+        document.querySelectorAll('.remove-ligne').forEach(btn => {
+            btn.onclick = function () {
+                this.closest('.medicament-row').remove();
+            };
+        });
+    }
+    attachRemoveListeners();
+</script>
+</th:block>
+</html>

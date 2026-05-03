@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title>Formulaire Rendez-vous</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="d-flex align-items-center gap-2 mb-4">
+        <a th:href="@{/rendez-vous}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i></a>
+        <h2 class="fw-bold mb-0">
+            <span th:if="${rendezVousDto.id == null}">Nouveau rendez-vous</span>
+            <span th:unless="${rendezVousDto.id == null}">Modifier le rendez-vous</span>
+        </h2>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="max-width: 650px;">
+        <div class="card-body p-4">
+            <form th:action="${rendezVousDto.id == null ? '/rendez-vous/nouveau' : '/rendez-vous/' + rendezVousDto.id + '/modifier'}"
+                  th:object="${rendezVousDto}" method="post" novalidate>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Patient <span class="text-danger">*</span></label>
+                        <select th:field="*{patientId}" class="form-select"
+                                th:classappend="${#fields.hasErrors('patientId')} ? 'is-invalid'">
+                            <option value="">— Choisir un patient —</option>
+                            <option th:each="p : ${patients}"
+                                    th:value="${p.id}"
+                                    th:text="${p.prenom + ' ' + p.nom + ' (' + p.cin + ')'}"></option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{patientId}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Médecin <span class="text-danger">*</span></label>
+                        <select th:field="*{medecinId}" class="form-select"
+                                th:classappend="${#fields.hasErrors('medecinId')} ? 'is-invalid'">
+                            <option value="">— Choisir un médecin —</option>
+                            <option th:each="m : ${medecins}"
+                                    th:value="${m.id}"
+                                    th:text="${'Dr. ' + m.prenom + ' ' + m.nom + ' — ' + m.specialite}"></option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{medecinId}"></div>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label fw-semibold">Date et heure <span class="text-danger">*</span></label>
+                        <input type="datetime-local" th:field="*{dateHeure}" class="form-control"
+                               th:classappend="${#fields.hasErrors('dateHeure')} ? 'is-invalid'"/>
+                        <div class="invalid-feedback" th:errors="*{dateHeure}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Durée (min) <span class="text-danger">*</span></label>
+                        <input type="number" th:field="*{dureeMinutes}" class="form-control"
+                               min="5" step="5"
+                               th:classappend="${#fields.hasErrors('dureeMinutes')} ? 'is-invalid'"/>
+                        <div class="invalid-feedback" th:errors="*{dureeMinutes}"></div>
+                    </div>
+                    <div class="col-md-6" th:if="${rendezVousDto.id != null}">
+                        <label class="form-label fw-semibold">Statut</label>
+                        <select th:field="*{statut}" class="form-select">
+                            <option th:each="s : ${statuts}" th:value="${s}" th:text="${s}"></option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Motif de consultation</label>
+                        <input type="text" th:field="*{motif}" class="form-control"
+                               placeholder="Consultation générale, suivi, urgence..."/>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i>Enregistrer
+                    </button>
+                    <a th:href="@{/rendez-vous}" class="btn btn-outline-secondary">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

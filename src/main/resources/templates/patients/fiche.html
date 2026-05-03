@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/main}">
+<head><title>Fiche Patient</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="d-flex align-items-center gap-2 mb-4">
+        <a th:href="@{/patients}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i></a>
+        <h2 class="fw-bold mb-0">Fiche Patient</h2>
+        <div class="ms-auto d-flex gap-2">
+            <a th:href="@{/patients/{id}/modifier(id=${patient.id})}" class="btn btn-warning btn-sm">
+                <i class="bi bi-pencil me-1"></i>Modifier
+            </a>
+            <a th:href="@{/rendez-vous/nouveau(patientId=${patient.id})}" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus me-1"></i>Nouveau RDV
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Infos patient -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center"
+                             style="width:80px;height:80px">
+                            <i class="bi bi-person fs-1 text-primary"></i>
+                        </div>
+                        <h5 class="fw-bold mt-2 mb-0" th:text="${patient.prenom + ' ' + patient.nom}"></h5>
+                        <span class="badge bg-secondary" th:text="'CIN : ' + ${patient.cin}"></span>
+                    </div>
+                    <hr/>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5 text-muted small">Date naissance</dt>
+                        <dd class="col-sm-7" th:text="${#temporals.format(patient.dateNaissance, 'dd/MM/yyyy')}"></dd>
+
+                        <dt class="col-sm-5 text-muted small">Téléphone</dt>
+                        <dd class="col-sm-7" th:text="${patient.telephone ?: '—'}"></dd>
+
+                        <dt class="col-sm-5 text-muted small">Email</dt>
+                        <dd class="col-sm-7" th:text="${patient.email ?: '—'}"></dd>
+
+                        <dt class="col-sm-5 text-muted small">Inscrit le</dt>
+                        <dd class="col-sm-7" th:text="${#temporals.format(patient.dateCreation, 'dd/MM/yyyy')}"></dd>
+                    </dl>
+                    <div th:if="${patient.antecedents}" class="mt-3">
+                        <h6 class="fw-semibold text-danger"><i class="bi bi-exclamation-triangle me-1"></i>Antécédents</h6>
+                        <p class="small mb-0" th:text="${patient.antecedents}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historique RDV -->
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0"><i class="bi bi-calendar-check me-2 text-primary"></i>Historique des rendez-vous</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div th:if="${rdvList.empty}" class="p-4 text-center text-muted">
+                        <i class="bi bi-calendar-x fs-3"></i>
+                        <p class="mt-2 mb-0">Aucun rendez-vous enregistré</p>
+                    </div>
+                    <div th:unless="${rdvList.empty}" class="table-responsive">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="table-light">
+                            <tr><th>Date/Heure</th><th>Médecin</th><th>Motif</th><th>Statut</th><th>Ordonnance</th><th></th></tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="rdv : ${rdvList}">
+                                <td th:text="${#temporals.format(rdv.dateHeure, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td th:text="${'Dr. ' + rdv.medecin.prenom + ' ' + rdv.medecin.nom}"></td>
+                                <td th:text="${rdv.motif ?: '—'}"></td>
+                                <td>
+                                    <span th:class="${'badge badge-' + #strings.toLowerCase(rdv.statut.name())}"
+                                          th:text="${rdv.statut}"></span>
+                                </td>
+                                <td>
+                                    <span th:if="${rdv.ordonnance != null}">
+                                        <a th:href="@{/ordonnances/{id}(id=${rdv.ordonnance.id})}"
+                                           class="btn btn-sm btn-outline-success">
+                                            <i class="bi bi-file-medical"></i>
+                                        </a>
+                                    </span>
+                                    <span th:if="${rdv.ordonnance == null and rdv.statut.name() != 'ANNULE'}"
+                                          sec:authorize="hasAnyRole('ADMIN','MEDECIN')">
+                                        <a th:href="@{/ordonnances/nouveau(rdvId=${rdv.id})}"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-plus"></i>
+                                        </a>
+                                    </span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/rendez-vous/{id}(id=${rdv.id})}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

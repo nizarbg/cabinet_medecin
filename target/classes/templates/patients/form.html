@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title>Formulaire Patient</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="d-flex align-items-center gap-2 mb-4">
+        <a th:href="@{/patients}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <h2 class="fw-bold mb-0">
+            <span th:if="${patientDto.id == null}">Nouveau patient</span>
+            <span th:unless="${patientDto.id == null}">Modifier le patient</span>
+        </h2>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="max-width: 700px;">
+        <div class="card-body p-4">
+            <form th:action="${patientDto.id == null ? '/patients/nouveau' : '/patients/' + patientDto.id + '/modifier'}"
+                  th:object="${patientDto}" method="post" novalidate>
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">CIN <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{cin}" class="form-control"
+                               th:classappend="${#fields.hasErrors('cin')} ? 'is-invalid'"/>
+                        <div class="invalid-feedback" th:errors="*{cin}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Nom <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{nom}" class="form-control"
+                               th:classappend="${#fields.hasErrors('nom')} ? 'is-invalid'"/>
+                        <div class="invalid-feedback" th:errors="*{nom}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Prénom <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{prenom}" class="form-control"
+                               th:classappend="${#fields.hasErrors('prenom')} ? 'is-invalid'"/>
+                        <div class="invalid-feedback" th:errors="*{prenom}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Date de naissance <span class="text-danger">*</span></label>
+                        <input type="date" th:field="*{dateNaissance}" class="form-control"
+                               th:classappend="${#fields.hasErrors('dateNaissance')} ? 'is-invalid'"/>
+                        <div class="invalid-feedback" th:errors="*{dateNaissance}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Téléphone</label>
+                        <input type="text" th:field="*{telephone}" class="form-control" placeholder="12345678"
+                               th:classappend="${#fields.hasErrors('telephone')} ? 'is-invalid'"/>
+                        <div class="invalid-feedback" th:errors="*{telephone}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Email</label>
+                        <input type="email" th:field="*{email}" class="form-control"
+                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"/>
+                        <div class="invalid-feedback" th:errors="*{email}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Antécédents médicaux</label>
+                        <textarea th:field="*{antecedents}" class="form-control" rows="3"
+                                  placeholder="Maladies chroniques, allergies, antécédents familiaux..."></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i>Enregistrer
+                    </button>
+                    <a th:href="@{/patients}" class="btn btn-outline-secondary">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
