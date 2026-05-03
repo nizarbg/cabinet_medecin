@@ -31,7 +31,7 @@ public class RendezVous {
     private int dureeMinutes;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(20)")
     private StatutRdv statut = StatutRdv.PLANIFIE;
 
     private String motif;
